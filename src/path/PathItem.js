@@ -292,6 +292,11 @@ var PathItem = Item.extend(/** @lends PathItem# */{
 /*#*/ } // !__options.nativeContains && __options.booleanOperations
     },
 
+    smooth: function() {
+        for (var i = 0, l = this._children.length; i < l; i++)
+            this._children[i].smooth();
+    },
+
     /**
      * Smooths the curves without changing the amount of segments in the path
      * or moving their locations, by only smoothing and adjusting the angle and
@@ -346,11 +351,11 @@ var PathItem = Item.extend(/** @lends PathItem# */{
      * // Smooth the segments of the copy:
      * copy.smooth();
      */
-    smooth: function(tension) {
+    smoothNew: function(tension) {
         // Handle delegation to both children (CompoundPath) and segments (Path)
         var items = this._children || this._segments;
         for (var i = 0, l = items.length; i < l; i++)
-            items[i].smooth(tension);
+            items[i].smoothNew(tension);
     },
 
     smoothCatmullRom: function() {

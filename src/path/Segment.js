@@ -442,15 +442,12 @@ var Segment = Base.extend(/** @lends Segment# */{
  	 * its point, by taking into its distance to the neighboring segments and
  	 * changing the direction and length of the segment's handles accordingly.
  	 *
- 	 * @name PathItem#smooth
- 	 * @function
- 	 *
  	 * @param {Number} [tension=0.4] controls the amount of smoothing as a
  	 * factor by wich to scale each handle.
  	 *
- 	 * @see PathItem#smooth(tension)
+ 	 * @see PathItem#smoothNew(tension)
  	 */
- 	smooth: function(tension) {
+ 	smoothNew: function(tension) {
  		// Smoothing approach based on:
         // http://www.antigrain.com/research/bezier_interpolation/
         // http://scaledinnovation.com/analytics/splines/aboutSplines.html
