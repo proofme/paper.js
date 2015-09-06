@@ -470,16 +470,14 @@ var Segment = Base.extend(/** @lends Segment# */{
  	},
 
  	smoothCatmullRom: function() {
- 		var prev = this.getPrevious(),
- 			next = this.getNext();
- 		if (prev && next) {
- 			var p0 = prev._point,
- 				p1 = this._point,
- 				p2 = next._point,
- 				h = p0.add(p1.multiply(6)).subtract(p2).divide(6).subtract(p1);
- 			this.setHandleIn(h);
- 			this.setHandleOut(h.negate());
- 		}
+ 		var prev = this.getPrevious() || this,
+ 			next = this.getNext() || this;
+		var p0 = prev._point,
+			p1 = this._point,
+			p2 = next._point,
+			h = p0.add(p1.multiply(6)).subtract(p2).divide(6).subtract(p1);
+		this.setHandleIn(h);
+		this.setHandleOut(h.negate());
  	},
 
     /**
