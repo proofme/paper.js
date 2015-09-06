@@ -438,8 +438,8 @@ var Segment = Base.extend(/** @lends Segment# */{
     },
 
  	/**
- 	 * Smoothes the bezier curves that pass through this segment without moving
- 	 * its point, by taking into its distance to the neighbouring segments and
+ 	 * Smooths the bezier curves that pass through this segment without moving
+ 	 * its point, by taking into its distance to the neighboring segments and
  	 * changing the direction and length of the segment's handles accordingly.
  	 *
  	 * @name PathItem#smooth
@@ -466,6 +466,19 @@ var Segment = Base.extend(/** @lends Segment# */{
  				k = t * l1 / (l1 + l2);
  			this.setHandleIn(vector.multiply(k));
  			this.setHandleOut(vector.multiply(k - t));
+ 		}
+ 	},
+
+ 	smoothCatmullRom: function() {
+ 		var prev = this.getPrevious(),
+ 			next = this.getNext();
+ 		if (prev && next) {
+ 			var p0 = prev._point,
+ 				p1 = this._point,
+ 				p2 = next._point,
+ 				h = p0.add(p1.multiply(6)).subtract(p2).divide(6).subtract(p1);
+ 			this.setHandleIn(h);
+ 			this.setHandleOut(h.negate());
  		}
  	},
 

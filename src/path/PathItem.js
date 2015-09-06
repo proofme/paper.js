@@ -293,7 +293,7 @@ var PathItem = Item.extend(/** @lends PathItem# */{
     },
 
     /**
-     * Smoothes the curves without changing the amount of segments in the path
+     * Smooths the curves without changing the amount of segments in the path
      * or moving their locations, by only smoothing and adjusting the angle and
      * length of their handles.
      * This works for open ended as well as closed paths.
@@ -351,6 +351,12 @@ var PathItem = Item.extend(/** @lends PathItem# */{
         var items = this._children || this._segments;
         for (var i = 0, l = items.length; i < l; i++)
             items[i].smooth(tension);
+    },
+
+    smoothCatmullRom: function() {
+        var items = this._children || this._segments;
+        for (var i = 0, l = items.length; i < l; i++)
+            items[i].smoothCatmullRom();
     },
 
     /**
