@@ -452,6 +452,8 @@ var Segment = Base.extend(/** @lends Segment# */{
  	 */
  	smooth: function(tension) {
  		// Smoothing approach based on:
+        // http://www.antigrain.com/research/bezier_interpolation/
+        // http://scaledinnovation.com/analytics/splines/aboutSplines.html
  		// http://bseth99.github.io/projects/animate/2-bezier-curves.html
  		var prev = this.getPrevious(),
  			next = this.getNext();
