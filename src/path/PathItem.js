@@ -347,9 +347,10 @@ var PathItem = Item.extend(/** @lends PathItem# */{
      * copy.smooth();
      */
     smooth: function(tension) {
-        var children = this._children;
-        for (var i = 0, l = children.length; i < l; i++)
-            children[i].smooth(tension);
+        // Handle delegation to both children (CompoundPath) and segments (Path)
+        var items = this._children || this._segments;
+        for (var i = 0, l = items.length; i < l; i++)
+            items[i].smooth(tension);
     },
 
     /**

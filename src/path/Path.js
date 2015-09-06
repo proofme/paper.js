@@ -1392,13 +1392,6 @@ var Path = PathItem.extend(/** @lends Path# */{
         return this;
     },
 
-    smooth: function(tension) {
-        // The docs for this are in PathItem#smooth()
-        var segments = this._segments;
-        for (var i = 0, l = segments.length; i < l; i++)
-            segments[i].smooth(tension);
-    },
-
     /**
      * Attempts to create a new shape item with same geometry as this path item,
      * and inherits all settings from it, similar to {@link Item#clone()}.
