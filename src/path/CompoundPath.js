@@ -126,11 +126,6 @@ var CompoundPath = PathItem.extend(/** @lends CompoundPath# */{
             children[i].reverse();
     },
 
-    smooth: function() {
-        for (var i = 0, l = this._children.length; i < l; i++)
-            this._children[i].smooth();
-    },
-
     reduce: function reduce() {
         if (this._children.length === 0) { // Replace with a simple empty Path
             var path = new Path(Item.NO_INSERT);

@@ -1392,6 +1392,13 @@ var Path = PathItem.extend(/** @lends Path# */{
         return this;
     },
 
+    smooth: function(tension) {
+        // The docs for this are in PathItem#smooth()
+        var segments = this._segments;
+        for (var i = 0, l = segments.length; i < l; i++)
+            segments[i].smooth(tension);
+    },
+
     /**
      * Attempts to create a new shape item with same geometry as this path item,
      * and inherits all settings from it, similar to {@link Item#clone()}.
@@ -2226,132 +2233,6 @@ var Path = PathItem.extend(/** @lends Path# */{
             // Now stroke it and draw its handles:
             ctx.stroke();
             drawHandles(ctx, this._segments, matrix, paper.settings.handleSize);
-        }
-    };
-}, new function() { // Path Smoothing
-
-    /**
-     * Solves a tri-diagonal system for one of coordinates (x or y) of first
-     * bezier control points.
-     *
-     * @param rhs right hand side vector
-     * @return Solution vector
-     */
-    function getFirstControlPoints(rhs) {
-        var n = rhs.length,
-            x = [], // Solution vector.
-            tmp = [], // Temporary workspace.
-            b = 2;
-        x[0] = rhs[0] / b;
-        // Decomposition and forward substitution.
-        for (var i = 1; i < n; i++) {
-            tmp[i] = 1 / b;
-            b = (i < n - 1 ? 4 : 2) - tmp[i];
-            x[i] = (rhs[i] - x[i - 1]) / b;
-        }
-        // Back-substitution.
-        for (var i = 1; i < n; i++) {
-            x[n - i - 1] -= tmp[n - i] * x[n - i];
-        }
-        return x;
-    }
-
-    return {
-        // Note: Documentation for smooth() is in PathItem
-        smooth: function() {
-            // This code is based on the work by Oleg V. Polikarpotchkin,
-            // http://ov-p.spaces.live.com/blog/cns!39D56F0C7A08D703!147.entry
-            // It was extended to support closed paths by averaging overlapping
-            // beginnings and ends. The result of this approach is very close to
-            // Polikarpotchkin's closed curve solution, but reuses the same
-            // algorithm as for open paths, and is probably executing faster as
-            // well, so it is preferred.
-            var segments = this._segments,
-                size = segments.length,
-                closed = this._closed,
-                n = size,
-                // Add overlapping ends for averaging handles in closed paths
-                overlap = 0;
-            if (size <= 2)
-                return;
-            if (closed) {
-                // Overlap up to 4 points since averaging beziers affect the 4
-                // neighboring points
-                overlap = Math.min(size, 4);
-                n += Math.min(size, overlap) * 2;
-            }
-            var knots = [];
-            for (var i = 0; i < size; i++)
-                knots[i + overlap] = segments[i]._point;
-            if (closed) {
-                // If we're averaging, add the 4 last points again at the
-                // beginning, and the 4 first ones at the end.
-                for (var i = 0; i < overlap; i++) {
-                    knots[i] = segments[i + size - overlap]._point;
-                    knots[i + size + overlap] = segments[i]._point;
-                }
-            } else {
-                n--;
-            }
-            // Calculate first Bezier control points
-            // Right hand side vector
-            var rhs = [];
-
-            // Set right hand side X values
-            for (var i = 1; i < n - 1; i++)
-                rhs[i] = 4 * knots[i]._x + 2 * knots[i + 1]._x;
-            rhs[0] = knots[0]._x + 2 * knots[1]._x;
-            rhs[n - 1] = 3 * knots[n - 1]._x;
-            // Get first control points X-values
-            var x = getFirstControlPoints(rhs);
-
-            // Set right hand side Y values
-            for (var i = 1; i < n - 1; i++)
-                rhs[i] = 4 * knots[i]._y + 2 * knots[i + 1]._y;
-            rhs[0] = knots[0]._y + 2 * knots[1]._y;
-            rhs[n - 1] = 3 * knots[n - 1]._y;
-            // Get first control points Y-values
-            var y = getFirstControlPoints(rhs);
-
-            if (closed) {
-                // Do the actual averaging simply by linearly fading between the
-                // overlapping values.
-                for (var i = 0, j = size; i < overlap; i++, j++) {
-                    var f1 = i / overlap,
-                        f2 = 1 - f1,
-                        ie = i + overlap,
-                        je = j + overlap;
-                    // Beginning
-                    x[j] = x[i] * f1 + x[j] * f2;
-                    y[j] = y[i] * f1 + y[j] * f2;
-                    // End
-                    x[je] = x[ie] * f2 + x[je] * f1;
-                    y[je] = y[ie] * f2 + y[je] * f1;
-                }
-                n--;
-            }
-            var handleIn = null;
-            // Now set the calculated handles
-            for (var i = overlap; i <= n - overlap; i++) {
-                var segment = segments[i - overlap];
-                if (handleIn)
-                    segment.setHandleIn(handleIn.subtract(segment._point));
-                if (i < n) {
-                    segment.setHandleOut(
-                            new Point(x[i], y[i]).subtract(segment._point));
-                    handleIn = i < n - 1
-                            ? new Point(
-                                2 * knots[i + 1]._x - x[i + 1],
-                                2 * knots[i + 1]._y - y[i + 1])
-                            : new Point(
-                                (knots[n]._x + x[n - 1]) / 2,
-                                (knots[n]._y + y[n - 1]) / 2);
-                }
-            }
-            if (closed && handleIn) {
-                var segment = this._segments[0];
-                segment.setHandleIn(handleIn.subtract(segment._point));
-            }
         }
     };
 }, new function() { // PostScript-style drawing commands
