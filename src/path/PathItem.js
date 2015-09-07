@@ -297,9 +297,9 @@ var PathItem = Item.extend(/** @lends PathItem# */{
             this._children[i].smooth();
     },
 
-    smoothContinous: function() {
+    smoothContinuous: function() {
         for (var i = 0, l = this._children.length; i < l; i++)
-            this._children[i].smoothContinous();
+            this._children[i].smoothContinuous();
     },
 
     /**

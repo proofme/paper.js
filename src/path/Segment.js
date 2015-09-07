@@ -475,13 +475,13 @@ var Segment = Base.extend(/** @lends Segment# */{
         // 0.0: uniform
         // 0.5: centripetal
         // 1.0: chordal
- 		var prev = this.getPrevious() || this,
- 			next = this.getNext() || this;
-		var p0 = prev._point,
+        var alpha = tension === undefined ? 0.5 : tension,
+ 		    prev = this.getPrevious() || this,
+ 			next = this.getNext() || this,
+		    p0 = prev._point,
 			p1 = this._point,
 			p2 = next._point,
-            alpha = tension === undefined ? 0.5 : tension;
-        var d1 = p0.getDistance(p1),
+            d1 = p0.getDistance(p1),
             d2 = p1.getDistance(p2),
             d1powA = Math.pow(d1, alpha),
             d1pow2A = d1powA * d1powA,

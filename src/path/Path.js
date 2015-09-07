@@ -2262,7 +2262,7 @@ var Path = PathItem.extend(/** @lends Path# */{
          * second derivatives of all involved curves are continuous across their
          * boundaries.
          */
-        smoothContinous: function() {
+        smoothContinuous: function() {
             // Based on work by Lubos Brieda, Particle In Cell Consulting LLC
             // https://www.particleincell.com/2012/bezier-splines/
             //
