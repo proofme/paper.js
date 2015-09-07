@@ -476,11 +476,11 @@ var Segment = Base.extend(/** @lends Segment# */{
         // 0.5: centripetal
         // 1.0: chordal
         var alpha = tension === undefined ? 0.5 : tension,
- 		    prev = this.getPrevious() || this,
- 			next = this.getNext() || this,
-		    p0 = prev._point,
+ 		    prev = this.getPrevious(),
+ 			next = this.getNext(),
+		    p0 = (prev || this)._point,
 			p1 = this._point,
-			p2 = next._point,
+			p2 = (next || this)._point,
             d1 = p0.getDistance(p1),
             d2 = p1.getDistance(p2),
             d1powA = Math.pow(d1, alpha),
@@ -490,19 +490,21 @@ var Segment = Base.extend(/** @lends Segment# */{
             A = 2 * d1pow2A + 3 * d1powA * d2powA + d2pow2A,
             B = 2 * d2pow2A + 3 * d2powA * d1powA + d1pow2A,
             N = 3 * d1powA * (d1powA + d2powA),
-            M = 3 * d2powA * (d2powA + d1powA),
-            h1 = M !== 0
+            M = 3 * d2powA * (d2powA + d1powA);
+        if (prev) {
+            this.setHandleIn(M !== 0
                 ? new Point(
                     (d2pow2A * p0.x + B * p1.x - d1pow2A * p2.x) / M - p1.x,
                     (d2pow2A * p0.y + B * p1.y - d1pow2A * p2.y) / M - p1.y)
-                : new Point(),
-            h2 = N !== 0
+                : new Point());
+        }
+        if (next) {
+            this.setHandleOut(N !== 0
                 ? new Point(
                     (-d2pow2A * p0.x + A * p1.x + d1pow2A * p2.x) / N - p1.x,
                     (-d2pow2A * p0.y + A * p1.y + d1pow2A * p2.y) / N - p1.y)
-                : new Point();
-        this.setHandleIn(h1);
-        this.setHandleOut(h2);
+                : new Point());
+        }
  	},
 
     /**
