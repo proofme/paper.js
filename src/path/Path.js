@@ -2346,7 +2346,7 @@ var Path = PathItem.extend(/** @lends Path# */{
                     pt = segment._point,
                     hx = px[i] - pt._x,
                     hy = py[i] - pt._y;
-                if (closed || i < n_1)
+                if (closed || i < n)
                     segment.setHandleOut(hx, hy);
                 if ( closed || i > 0)
                     segment.setHandleIn(-hx, -hy);
