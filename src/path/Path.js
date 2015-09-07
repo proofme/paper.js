@@ -2258,11 +2258,11 @@ var Path = PathItem.extend(/** @lends Path# */{
 
     return {
         /**
-         * Computes cubic bezier coefficients to generate a smooth line through
-         * specified points, by making sure that the first and second
-         * derivatives are continuous across the bezier curve boundaries.
+         * Smooths the path by adjusting its curve handles so that the first and
+         * second derivatives of all involved curves are continuous across their
+         * boundaries.
          */
-        smoothSpline: function() {
+        smoothContinous: function() {
             // Based on work by Lubos Brieda, Particle In Cell Consulting LLC
             // https://www.particleincell.com/2012/bezier-splines/
             //

@@ -297,9 +297,9 @@ var PathItem = Item.extend(/** @lends PathItem# */{
             this._children[i].smooth();
     },
 
-    smoothSpline: function() {
+    smoothContinous: function() {
         for (var i = 0, l = this._children.length; i < l; i++)
-            this._children[i].smoothSpline();
+            this._children[i].smoothContinous();
     },
 
     /**
@@ -356,11 +356,11 @@ var PathItem = Item.extend(/** @lends PathItem# */{
      * // Smooth the segments of the copy:
      * copy.smooth();
      */
-    smoothSimple: function(tension) {
+    smoothGeometric: function(tension) {
         // Handle delegation to both children (CompoundPath) and segments (Path)
         var items = this._children || this._segments;
         for (var i = 0, l = items.length; i < l; i++)
-            items[i].smoothSimple(tension);
+            items[i].smoothGeometric(tension);
     },
 
     smoothCatmullRom: function() {
