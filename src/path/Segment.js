@@ -437,38 +437,38 @@ var Segment = Base.extend(/** @lends Segment# */{
                 || this._path._closed && segments[0]) || null;
     },
 
- 	/**
- 	 * Smooths the bezier curves that pass through this segment without moving
- 	 * its point, by taking into its distance to the neighboring segments and
- 	 * changing the direction and length of the segment's handles accordingly.
- 	 *
- 	 * @param {Number} [tension=0.4] controls the amount of smoothing as a
- 	 * factor by wich to scale each handle.
- 	 *
- 	 * @see PathItem#smoothGeometric(tension)
- 	 */
- 	smoothGeometric: function(tension) {
- 		// Smoothing approach based on:
+    /**
+     * Smooths the bezier curves that pass through this segment without moving
+     * its point, by taking into its distance to the neighboring segments and
+     * changing the direction and length of the segment's handles accordingly.
+     *
+     * @param {Number} [tension=0.4] controls the amount of smoothing as a
+     * factor by wich to scale each handle.
+     *
+     * @see PathItem#smoothGeometric(tension)
+     */
+    smoothGeometric: function(tension) {
+        // Smoothing approach based on:
         // http://www.antigrain.com/research/bezier_interpolation/
         // http://scaledinnovation.com/analytics/splines/aboutSplines.html
- 		// http://bseth99.github.io/projects/animate/2-bezier-curves.html
- 		var prev = this.getPrevious(),
- 			next = this.getNext();
- 		if (prev && next) {
- 			var p0 = prev._point,
- 				p1 = this._point,
- 				p2 = next._point,
- 				l1 = p1.getDistance(p0),
- 				l2 = p1.getDistance(p2),
- 				vector = p0.subtract(p2),
- 				t = tension === undefined ? 0.4 : tension,
- 				k = t * l1 / (l1 + l2);
- 			this.setHandleIn(vector.multiply(k));
- 			this.setHandleOut(vector.multiply(k - t));
- 		}
- 	},
+        // http://bseth99.github.io/projects/animate/2-bezier-curves.html
+        var prev = this.getPrevious(),
+            next = this.getNext();
+        if (prev && next) {
+            var p0 = prev._point,
+                p1 = this._point,
+                p2 = next._point,
+                l1 = p1.getDistance(p0),
+                l2 = p1.getDistance(p2),
+                vector = p0.subtract(p2),
+                t = tension === undefined ? 0.4 : tension,
+                k = t * l1 / (l1 + l2);
+            this.setHandleIn(vector.multiply(k));
+            this.setHandleOut(vector.multiply(k - t));
+        }
+    },
 
- 	smoothCatmullRom: function(tension) {
+    smoothCatmullRom: function(tension) {
         // Implementation of by Catmull-Rom splines with tension parameter based
         // on work by @nicholaswmin, https://github.com/nicholaswmin/VectorTests
         // Using the tension values produces different types of splines:
@@ -476,11 +476,11 @@ var Segment = Base.extend(/** @lends Segment# */{
         // 0.5: centripetal
         // 1.0: chordal
         var alpha = tension === undefined ? 0.5 : tension,
- 		    prev = this.getPrevious(),
- 			next = this.getNext(),
-		    p0 = (prev || this)._point,
-			p1 = this._point,
-			p2 = (next || this)._point,
+            prev = this.getPrevious(),
+            next = this.getNext(),
+            p0 = (prev || this)._point,
+            p1 = this._point,
+            p2 = (next || this)._point,
             d1 = p0.getDistance(p1),
             d2 = p1.getDistance(p2),
             d1powA = Math.pow(d1, alpha),
@@ -505,7 +505,7 @@ var Segment = Base.extend(/** @lends Segment# */{
                     (-d2pow2A * p0.y + A * p1.y + d1pow2A * p2.y) / N - p1.y)
                 : new Point());
         }
- 	},
+    },
 
     /**
      * The previous segment in the {@link Path#segments} array that the
