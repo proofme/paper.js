@@ -445,9 +445,9 @@ var Segment = Base.extend(/** @lends Segment# */{
  	 * @param {Number} [tension=0.4] controls the amount of smoothing as a
  	 * factor by wich to scale each handle.
  	 *
- 	 * @see PathItem#smoothNew(tension)
+ 	 * @see PathItem#smoothSimple(tension)
  	 */
- 	smoothNew: function(tension) {
+ 	smoothSimple: function(tension) {
  		// Smoothing approach based on:
         // http://www.antigrain.com/research/bezier_interpolation/
         // http://scaledinnovation.com/analytics/splines/aboutSplines.html

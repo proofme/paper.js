@@ -356,11 +356,11 @@ var PathItem = Item.extend(/** @lends PathItem# */{
      * // Smooth the segments of the copy:
      * copy.smooth();
      */
-    smoothNew: function(tension) {
+    smoothSimple: function(tension) {
         // Handle delegation to both children (CompoundPath) and segments (Path)
         var items = this._children || this._segments;
         for (var i = 0, l = items.length; i < l; i++)
-            items[i].smoothNew(tension);
+            items[i].smoothSimple(tension);
     },
 
     smoothCatmullRom: function() {
