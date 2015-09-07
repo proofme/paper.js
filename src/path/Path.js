@@ -2257,7 +2257,103 @@ var Path = PathItem.extend(/** @lends Path# */{
     }
 
     return {
-        smooth: function() {
+        /**
+         * Computes cubic bezier coefficients to generate a smooth line through
+         * specified points, by making sure that the first and second
+         * derivatives are continuous across the bezier curve boundaries.
+         */
+        smoothSpline: function() {
+            // Based on work by Lubos Brieda, Particle In Cell Consulting LLC
+            // https://www.particleincell.com/2012/bezier-splines/
+            //
+            // Further simplified due to handle symmetry across segments,
+            // and the possibility to process x and y at the same time.
+            // Also added handling of closed paths.
+            var segments = this._segments,
+                length = segments.length,
+                closed = this._closed,
+                n = length - 1,
+                // Add overlapping ends for closed paths.
+                overlap = 0;
+            if (length <= 2)
+                return;
+            if (closed) {
+                // Overlap by up to 4 points since a current segment is affected
+                // by 4 neighbors.
+                overlap = Math.min(length, 4);
+                n += Math.min(length, overlap) * 2;
+            }
+            var knots = [];
+            for (var i = 0; i < length; i++)
+                knots[i + overlap] = segments[i]._point;
+            if (closed) {
+                // Add the last points again at the beginning, and the first
+                // ones at the end.
+                for (var i = 0; i < overlap; i++) {
+                    knots[i] = knots[i + length];
+                    knots[i + length + overlap] = knots[i + overlap];
+                }
+            }
+
+            // Right-hand side vectors, with left most segment added
+            var a = [0],
+                b = [2],
+                c = [1],
+                rx = [knots[0]._x + 2 * knots[1]._x],
+                ry = [knots[0]._y + 2 * knots[1]._y],
+                n_1 = n - 1;
+
+            // Internal segments
+            for (var i = 1; i < n_1; i++) {
+                a[i] = 1;
+                b[i] = 4;
+                c[i] = 1;
+                rx[i] = 4 * knots[i]._x + 2 * knots[i + 1]._x;
+                ry[i] = 4 * knots[i]._y + 2 * knots[i + 1]._y;
+            }
+
+            // Right segment
+            a[n_1] = 2;
+            b[n_1] = 7;
+            c[n_1] = 0;
+            rx[n_1] = 8 * knots[n_1]._x + knots[n]._x;
+            ry[n_1] = 8 * knots[n_1]._y + knots[n]._y;
+
+            // Solve Ax = b with the Thomas algorithm (from Wikipedia)
+            for (var i = 1, j = 0; i < n; i++, j++) {
+                var m = a[i] / b[j];
+                b[i] = b[i] - m * c[j];
+                rx[i] = rx[i] - m * rx[j];
+                ry[i] = ry[i] - m * ry[j];
+            }
+
+            var px = [],
+                py = [];
+
+            px[n_1] = rx[n_1] / b[n_1];
+            py[n_1] = ry[n_1] / b[n_1];
+            for (var i = n - 2; i >= 0; i--) {
+                px[i] = (rx[i] - c[i] * px[i + 1]) / b[i];
+                py[i] = (ry[i] - c[i] * py[i + 1]) / b[i];
+            }
+            px[n] = (3 * knots[n]._x - px[n_1]) / 2;
+            py[n] = (3 * knots[n]._y - py[n_1]) / 2;
+
+            // Now update the segments
+            n -= overlap;
+            for (var i = overlap; i <= n; i++) {
+                var segment = segments[i - overlap],
+                    pt = segment._point,
+                    hx = px[i] - pt._x,
+                    hy = py[i] - pt._y;
+                if (closed || i < n_1)
+                    segment.setHandleOut(hx, hy);
+                if ( closed || i > 0)
+                    segment.setHandleIn(-hx, -hy);
+            }
+        },
+
+        smoothOld: function() {
             // This code is based on the work by Oleg V. Polikarpotchkin,
             // http://ov-p.spaces.live.com/blog/cns!39D56F0C7A08D703!147.entry
             // It was extended to support closed paths by averaging overlapping
@@ -2266,28 +2362,28 @@ var Path = PathItem.extend(/** @lends Path# */{
             // algorithm as for open paths, and is probably executing faster as
             // well, so it is preferred.
             var segments = this._segments,
-                size = segments.length,
+                length = segments.length,
                 closed = this._closed,
-                n = size,
+                n = length,
                 // Add overlapping ends for averaging handles in closed paths
                 overlap = 0;
-            if (size <= 2)
+            if (length <= 2)
                 return;
             if (closed) {
                 // Overlap up to 4 points since averaging beziers affect the 4
                 // neighboring points
-                overlap = Math.min(size, 4);
-                n += Math.min(size, overlap) * 2;
+                overlap = Math.min(length, 4);
+                n += Math.min(length, overlap) * 2;
             }
             var knots = [];
-            for (var i = 0; i < size; i++)
+            for (var i = 0; i < length; i++)
                 knots[i + overlap] = segments[i]._point;
             if (closed) {
                 // If we're averaging, add the 4 last points again at the
                 // beginning, and the 4 first ones at the end.
                 for (var i = 0; i < overlap; i++) {
-                    knots[i] = segments[i + size - overlap]._point;
-                    knots[i + size + overlap] = segments[i]._point;
+                    knots[i] = segments[i + length - overlap]._point;
+                    knots[i + length + overlap] = segments[i]._point;
                 }
             } else {
                 n--;
@@ -2315,7 +2411,7 @@ var Path = PathItem.extend(/** @lends Path# */{
             if (closed) {
                 // Do the actual averaging simply by linearly fading between the
                 // overlapping values.
-                for (var i = 0, j = size; i < overlap; i++, j++) {
+                for (var i = 0, j = length; i < overlap; i++, j++) {
                     var f1 = i / overlap,
                         f2 = 1 - f1,
                         ie = i + overlap,
