@@ -292,7 +292,7 @@ var PathItem = Item.extend(/** @lends PathItem# */{
 /*#*/ } // !__options.nativeContains && __options.booleanOperations
     },
 
-    smoothOld: function() {
+    smooth: function() {
         for (var i = 0, l = this._children.length; i < l; i++)
             this._children[i].smooth();
     },

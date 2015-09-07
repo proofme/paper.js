@@ -2353,7 +2353,7 @@ var Path = PathItem.extend(/** @lends Path# */{
             }
         },
 
-        smoothOld: function() {
+        smooth: function() {
             // This code is based on the work by Oleg V. Polikarpotchkin,
             // http://ov-p.spaces.live.com/blog/cns!39D56F0C7A08D703!147.entry
             // It was extended to support closed paths by averaging overlapping
