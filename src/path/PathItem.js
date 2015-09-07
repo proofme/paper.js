@@ -363,10 +363,10 @@ var PathItem = Item.extend(/** @lends PathItem# */{
             items[i].smoothGeometric(tension);
     },
 
-    smoothCatmullRom: function() {
+    smoothCatmullRom: function(tension) {
         var items = this._children || this._segments;
         for (var i = 0, l = items.length; i < l; i++)
-            items[i].smoothCatmullRom();
+            items[i].smoothCatmullRom(tension);
     },
 
     /**

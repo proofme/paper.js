@@ -468,15 +468,41 @@ var Segment = Base.extend(/** @lends Segment# */{
  		}
  	},
 
- 	smoothCatmullRom: function() {
+ 	smoothCatmullRom: function(tension) {
+        // Implementation of by Catmull-Rom splines with tension parameter based
+        // on work by @nicholaswmin, https://github.com/nicholaswmin/VectorTests
+        // Using the tension values produces different types of splines:
+        // 0.0: uniform
+        // 0.5: centripetal
+        // 1.0: chordal
  		var prev = this.getPrevious() || this,
  			next = this.getNext() || this;
 		var p0 = prev._point,
 			p1 = this._point,
 			p2 = next._point,
-			h = p0.add(p1.multiply(6)).subtract(p2).divide(6).subtract(p1);
-		this.setHandleIn(h);
-		this.setHandleOut(h.negate());
+            alpha = tension === undefined ? 0.5 : tension;
+        var d1 = p0.getDistance(p1),
+            d2 = p1.getDistance(p2),
+            d1powA = Math.pow(d1, alpha),
+            d1pow2A = d1powA * d1powA,
+            d2powA = Math.pow(d2, alpha),
+            d2pow2A = d2powA * d2powA,
+            A = 2 * d1pow2A + 3 * d1powA * d2powA + d2pow2A,
+            B = 2 * d2pow2A + 3 * d2powA * d1powA + d1pow2A,
+            N = 3 * d1powA * (d1powA + d2powA),
+            M = 3 * d2powA * (d2powA + d1powA),
+            h1 = M !== 0
+                ? new Point(
+                    (d2pow2A * p0.x + B * p1.x - d1pow2A * p2.x) / M - p1.x,
+                    (d2pow2A * p0.y + B * p1.y - d1pow2A * p2.y) / M - p1.y)
+                : new Point(),
+            h2 = N !== 0
+                ? new Point(
+                    (-d2pow2A * p0.x + A * p1.x + d1pow2A * p2.x) / N - p1.x,
+                    (-d2pow2A * p0.y + A * p1.y + d1pow2A * p2.y) / N - p1.y)
+                : new Point();
+        this.setHandleIn(h1);
+        this.setHandleOut(h2);
  	},
 
     /**
