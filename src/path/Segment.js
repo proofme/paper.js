@@ -486,19 +486,19 @@ var Segment = Base.extend(/** @lends Segment# */{
             d1powA = Math.pow(d1, alpha),
             d1pow2A = d1powA * d1powA,
             d2powA = Math.pow(d2, alpha),
-            d2pow2A = d2powA * d2powA,
-            A = 2 * d1pow2A + 3 * d1powA * d2powA + d2pow2A,
-            B = 2 * d2pow2A + 3 * d2powA * d1powA + d1pow2A,
-            N = 3 * d1powA * (d1powA + d2powA),
-            M = 3 * d2powA * (d2powA + d1powA);
+            d2pow2A = d2powA * d2powA;
         if (prev) {
-            this.setHandleIn(M !== 0
+            var A = 2 * d2pow2A + 3 * d2powA * d1powA + d1pow2A,
+                N = 3 * d2powA * (d2powA + d1powA);
+            this.setHandleIn(N !== 0
                 ? new Point(
-                    (d2pow2A * p0.x + B * p1.x - d1pow2A * p2.x) / M - p1.x,
-                    (d2pow2A * p0.y + B * p1.y - d1pow2A * p2.y) / M - p1.y)
+                    (d2pow2A * p0.x + A * p1.x - d1pow2A * p2.x) / N - p1.x,
+                    (d2pow2A * p0.y + A * p1.y - d1pow2A * p2.y) / N - p1.y)
                 : new Point());
         }
         if (next) {
+            var A = 2 * d1pow2A + 3 * d1powA * d2powA + d2pow2A,
+                N = 3 * d1powA * (d1powA + d2powA);
             this.setHandleOut(N !== 0
                 ? new Point(
                     (-d2pow2A * p0.x + A * p1.x + d1pow2A * p2.x) / N - p1.x,
