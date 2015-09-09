@@ -492,8 +492,8 @@ var Segment = Base.extend(/** @lends Segment# */{
                 N = 3 * d2powA * (d2powA + d1powA);
             this.setHandleIn(N !== 0
                 ? new Point(
-                    (d2pow2A * p0.x + A * p1.x - d1pow2A * p2.x) / N - p1.x,
-                    (d2pow2A * p0.y + A * p1.y - d1pow2A * p2.y) / N - p1.y)
+                    (d2pow2A * p0._x + A * p1._x - d1pow2A * p2._x) / N - p1._x,
+                    (d2pow2A * p0._y + A * p1._y - d1pow2A * p2._y) / N - p1._y)
                 : new Point());
         }
         if (next) {
@@ -501,8 +501,8 @@ var Segment = Base.extend(/** @lends Segment# */{
                 N = 3 * d1powA * (d1powA + d2powA);
             this.setHandleOut(N !== 0
                 ? new Point(
-                    (-d2pow2A * p0.x + A * p1.x + d1pow2A * p2.x) / N - p1.x,
-                    (-d2pow2A * p0.y + A * p1.y + d1pow2A * p2.y) / N - p1.y)
+                    (d1pow2A * p2._x + A * p1._x - d2pow2A * p0._x) / N - p1._x,
+                    (d1pow2A * p2._y + A * p1._y - d2pow2A * p0._y) / N - p1._y)
                 : new Point());
         }
     },
